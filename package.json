@@ -1,0 +1,37 @@
+{
+  "name": "backend-mvp",
+  "version": "0.0.1",
+  "description": "MVP agentes de IA para una posible startup",
+  "keywords": [
+    "AI",
+    "Agents"
+  ],
+  "license": "ISC",
+  "author": "Keidevk",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "baileys": "^7.0.0-rc.9",
+    "csv-parser": "^3.2.0",
+    "fastify": "^5.8.5",
+    "pg": "^8.20.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
+    "@types/qrcode": "^1.5.6",
+    "@types/qrcode-terminal": "^0.12.2",
+    "prisma": "^7.8.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",        // <--- Fundamental para que reconozca los .js/.ts en Node 24
+    "moduleResolution": "NodeNext", 
+    "target": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": true, // <--- Evita que TS borre imports que cree que no usas
+    "exactOptionalPropertyTypes": false, // <--- DESACTÍVALO por ahora para que el CRUD sea más fluido
+    "noUncheckedIndexedAccess": true
+  }
+}
