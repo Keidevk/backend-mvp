@@ -6,15 +6,77 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Client {
+  id              String    @id @default(uuid())
+  name            String    // Nombre del negocio
+  whatsappNumber  String?   // Número personal para alertas
+  messageCredits  Int       @default(0) // Contador para el cobro por mensaje
+  botActive       Boolean   @default(false)
+  promptConfig    String?   // "Personalidad" del bot
+  createdAt       DateTime  @default(now())
+   
+   products        Product[]
+}
+
 model Product {
   id          String   @id @default(uuid())
   name        String
   description String?
-  price       Float
+  price       Float    // Guardado en USD
   stock       Int
-  client_id   String   // Clave para multitenencia
+  client_id   String
+  client      Client   @relation(fields: [client_id], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+   
+   @@index([client_id])
+}
 
-  @@index([client_id])
+model User {
+  id           String   @id @default(uuid())
+  clientId     String   @unique @map("client_id")
+  email        String   @unique
+  password     String
+  companyName  String   @map("company_name")
+  phoneNumber  String   @map("phone_number")
+  apiKey       String   @unique @map("api_key")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  bot          Bot?
+  messages     Message[]
+  
+  @@map("users")
+}
+
+model Bot {
+  id                String    @id @default(uuid())
+  userId            String    @unique @map("user_id")
+  isActive          Boolean   @default(false) @map("is_active")
+  whatsappSessionId String?   @map("whatsapp_session_id")
+  connectedAt       DateTime? @map("connected_at")
+  disconnectedAt    DateTime? @map("disconnected_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  
+  @@map("bots")
+}
+
+model Message {
+  id             String    @id @default(uuid())
+  botId          String    @map("bot_id")
+  userId         String    @map("user_id")
+  direction      String    // 'incoming' o 'outgoing'
+  customerNumber String?   @map("customer_number")
+  sentAt         DateTime  @default(now()) @map("sent_at")
+  
+  bot   Bot  @relation(fields: [botId], references: [id], onDelete: Cascade)
+  user  User @relation(fields: [userId], references: [id])
+  
+  @@index([botId, sentAt])
+  @@map("messages")
 }

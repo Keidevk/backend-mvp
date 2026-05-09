@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import { ProductoRouter } from "./routes/Productos/ProductRouter.js"; 
 import { LLMRouter } from "./routes/LLM/LLMRouter.js";
 import { whatsappRouter } from "./routes/Whatsapp/WhatsappRouter.js"; // Importamos el router de WhatsApp
+import { AuthRouter } from "./routes/Auth/AuthRouter.js"; // Importamos el router de Auth
 import { ChatOrchestrator } from "./routes/LLM/Orchestrator.js"; // Importamos el Orquestador
 import { prisma } from './pluggins/prisma.js';
 
@@ -18,6 +19,7 @@ ChatOrchestrator.init(fastify);
 fastify.register(ProductoRouter, { prefix: "api/productos" });
 fastify.register(LLMRouter, { prefix: 'api/llm' });
 fastify.register(whatsappRouter, { prefix: 'api/whatsapp' }); // Registramos el servicio de WhatsApp
+fastify.register(AuthRouter, { prefix: 'api/auth' }); // Registramos el router de autenticación
 
 const start = async () => {
   try {
