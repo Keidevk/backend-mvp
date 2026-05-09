@@ -15,9 +15,9 @@ const fastify = Fastify({
 ChatOrchestrator.init(fastify);
 
 // --- REGISTRO DE RUTAS ---
-fastify.register(ProductoRouter, { prefix: "/productos" });
-fastify.register(LLMRouter, { prefix: '/llm' });
-fastify.register(whatsappRouter, { prefix: '/whatsapp' }); // Registramos el servicio de WhatsApp
+fastify.register(ProductoRouter, { prefix: "api/productos" });
+fastify.register(LLMRouter, { prefix: 'api/llm' });
+fastify.register(whatsappRouter, { prefix: 'api/whatsapp' }); // Registramos el servicio de WhatsApp
 
 const start = async () => {
   try {
