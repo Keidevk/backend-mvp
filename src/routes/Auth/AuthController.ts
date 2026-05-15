@@ -24,6 +24,14 @@ export class AuthController {
     const { email, password, companyName, phoneNumber } =
       request.body as RegisterBody;
 
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return reply.code(409).send({ error: "El email ya está registrado" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const clientId = generateClientId(companyName);
     const apiKey = generateApiKey();

@@ -1,54 +1,82 @@
 import { WhatsappServices } from './WhatsappServices.js';
 import type makeWASocket from '@whiskeysockets/baileys';
 
-// Definimos el tipo del socket para TypeScript
 type WASocket = ReturnType<typeof makeWASocket>;
 
+interface SessionCallbacks {
+    onQR?: (qr: string) => void;
+    onConnected?: (clientId: string) => void;
+}
+
 class SessionManager {
-    // Mapa para mantener las conexiones activas en memoria
     private activeSessions = new Map<string, WASocket>();
-    
-    // Instanciamos el servicio de WhatsApp
+    private qrCodes = new Map<string, string | null>();
+    private sessionCallbacks = new Map<string, SessionCallbacks>();
     private whatsappService = new WhatsappServices();
 
-    async startSession(clientId: string) {
-        // Verificamos si ya existe una sesión para evitar duplicados
+    async startSession(clientId: string, callbacks?: SessionCallbacks) {
         if (this.activeSessions.has(clientId)) {
-            return { status: 'already_active', message: 'La sesión ya existe para este cliente' };
+            const existingQr = this.qrCodes.get(clientId) ?? null;
+            return { status: 'already_active', message: 'La sesión ya existe para este cliente', qrCode: existingQr };
         }
 
         try {
             console.log(`[Manager] Iniciando sesión para: ${clientId}`);
-            
-            // Llamamos al método initSession de la instancia
-            const sock = await this.whatsappService.initSession(clientId);
-            
-            // Guardamos el socket en nuestro mapa
+
+            if (callbacks) {
+                this.sessionCallbacks.set(clientId, callbacks);
+            }
+
+            const mergedCallbacks: SessionCallbacks = {
+                onQR: (qr) => {
+                    if (qr) {
+                        this.qrCodes.set(clientId, qr);
+                    } else {
+                        this.qrCodes.set(clientId, null);
+                    }
+                    this.sessionCallbacks.get(clientId)?.onQR?.(qr);
+                },
+                onConnected: (id) => {
+                    this.sessionCallbacks.get(clientId)?.onConnected?.(id);
+                },
+            };
+
+            const sock = await this.whatsappService.initSession(clientId, mergedCallbacks);
+
             this.activeSessions.set(clientId, sock);
-            
-            return { status: 'initializing', message: 'Proceso de vinculación iniciado. Revisa la terminal.' };
+
+            const qrCode = this.qrCodes.get(clientId) ?? null;
+
+            return { status: 'initializing', message: 'Proceso de vinculación iniciado', qrCode };
         } catch (error) {
             console.error(`[Manager] Error crítico en ${clientId}:`, error);
             throw error;
         }
     }
 
-    // Método para recuperar el socket de un cliente específico
+    getQR(clientId: string): string | null {
+        return this.qrCodes.get(clientId) ?? null;
+    }
+
     getSocket(clientId: string): WASocket | undefined {
         return this.activeSessions.get(clientId);
     }
 
-    // Método útil para cerrar sesiones si es necesario
     async stopSession(clientId: string) {
         const sock = this.activeSessions.get(clientId);
         if (sock) {
             await sock.logout();
             this.activeSessions.delete(clientId);
+            this.qrCodes.delete(clientId);
+            this.sessionCallbacks.delete(clientId);
             return true;
         }
         return false;
     }
+
+    clearQR(clientId: string) {
+        this.qrCodes.delete(clientId);
+    }
 }
 
-// Exportamos la instancia única (Singleton)
 export const sessionManager = new SessionManager();

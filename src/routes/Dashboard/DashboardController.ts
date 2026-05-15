@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { DashboardServices } from "./DashboardServices.js";
-import { WhatsappServices } from "../Whatsapp/WhatsappServices.js";
+import { sessionManager } from "../Whatsapp/SessionManager.js";
 import { prisma } from "../../pluggins/prisma.js";
 
 export class DashboardController {
@@ -20,18 +20,27 @@ export class DashboardController {
     const bot = await DashboardServices.getOrCreateBot(userId);
 
     try {
-      const session = await WhatsappServices.startSession(user.clientId);
+      const session = await sessionManager.startSession(user.clientId, {
+        onConnected: async (id) => {
+          await DashboardServices.updateBotStatus(userId, {
+            isActive: true,
+            whatsappSessionId: id,
+            connectedAt: new Date(),
+            disconnectedAt: null,
+          });
+        },
+      });
 
       await DashboardServices.updateBotStatus(userId, {
         isActive: true,
-        whatsappSessionId: session ? user.clientId : null,
-        connectedAt: new Date(),
-        disconnectedAt: null,
       });
 
       return reply.send({
         success: true,
         message: "Bot activado correctamente",
+        data: {
+          qrCode: session.qrCode,
+        },
       });
     } catch (error) {
       return reply.code(500).send({
@@ -96,8 +105,7 @@ export class DashboardController {
       return reply.code(404).send({ error: "Bot no encontrado" });
     }
 
-    const from = request.query["from"] as string | undefined;
-    const to = request.query["to"] as string | undefined;
+    const { from, to } = request.query as { from?: string; to?: string };
 
     const fromDate = from ? new Date(from) : undefined;
     const toDate = to ? new Date(to) : undefined;
@@ -147,10 +155,16 @@ export class DashboardController {
       averageDailyMessages = Math.round(counts.total / diffDays);
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { messageCredits: true },
+    });
+
     return reply.send({
       success: true,
       data: {
         totalMessages: counts.total,
+        messageCredits: user?.messageCredits ?? 0,
         isBotActive: bot.isActive,
         lastMessageAt: lastMessage?.sentAt || null,
         averageDailyMessages,

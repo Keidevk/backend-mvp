@@ -33,16 +33,17 @@ model Product {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  clientId     String   @unique @map("client_id")
-  email        String   @unique
-  password     String
-  companyName  String   @map("company_name")
-  phoneNumber  String   @map("phone_number")
-  apiKey       String   @unique @map("api_key")
-  isActive     Boolean  @default(true) @map("is_active")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  clientId       String   @unique @map("client_id")
+  email          String   @unique
+  password       String
+  companyName    String   @map("company_name")
+  phoneNumber    String   @map("phone_number")
+  apiKey         String   @unique @map("api_key")
+  messageCredits Int      @default(0) @map("message_credits")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
   
   bot          Bot?
   messages     Message[]
