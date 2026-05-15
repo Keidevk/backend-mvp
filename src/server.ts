@@ -1,12 +1,12 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import { ProductoRouter } from "./routes/Productos/ProductRouter.js"; 
+import { ProductRouter } from "./routes/Productos/ProductRouter.js"; 
 import { LLMRouter } from "./routes/LLM/LLMRouter.js";
 import { whatsappRouter } from "./routes/Whatsapp/WhatsappRouter.js"; // Importamos el router de WhatsApp
 import { AuthRouter } from "./routes/Auth/AuthRouter.js"; // Importamos el router de Auth
 import { DashboardRouter } from "./routes/Dashboard/DashboardRouter.js";
 import { ChatOrchestrator } from "./routes/LLM/Orchestrator.js"; // Importamos el Orquestador
-import { prisma } from './pluggins/prisma.js';
+import { prisma } from './plugins/prisma.js';
 
 const fastify = Fastify({
   logger: true,
@@ -23,7 +23,7 @@ fastify.register(cors, {
 ChatOrchestrator.init(fastify);
 
 // --- REGISTRO DE RUTAS ---
-fastify.register(ProductoRouter, { prefix: "api/productos" });
+fastify.register(ProductRouter, { prefix: "api/productos" });
 fastify.register(LLMRouter, { prefix: 'api/llm' });
 fastify.register(whatsappRouter, { prefix: 'api/whatsapp' }); // Registramos el servicio de WhatsApp
 fastify.register(AuthRouter, { prefix: 'api/auth' }); // Registramos el router de autenticación
@@ -33,7 +33,7 @@ const start = async () => {
   try {
     // Conexión a la base de datos
     await prisma.$connect();
-    console.log("✅ Conexión con PostgreSQL (Docker) exitosa");
+    console.log("✅ Conexión con PostgreSQL exitosa");
 
     // Inicio del servidor
     await fastify.listen({ port: 3000, host: "0.0.0.0" });

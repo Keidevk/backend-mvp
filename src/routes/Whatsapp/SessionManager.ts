@@ -61,22 +61,6 @@ class SessionManager {
     getSocket(clientId: string): WASocket | undefined {
         return this.activeSessions.get(clientId);
     }
-
-    async stopSession(clientId: string) {
-        const sock = this.activeSessions.get(clientId);
-        if (sock) {
-            await sock.logout();
-            this.activeSessions.delete(clientId);
-            this.qrCodes.delete(clientId);
-            this.sessionCallbacks.delete(clientId);
-            return true;
-        }
-        return false;
-    }
-
-    clearQR(clientId: string) {
-        this.qrCodes.delete(clientId);
-    }
 }
 
 export const sessionManager = new SessionManager();

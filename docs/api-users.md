@@ -532,7 +532,6 @@ curl -X POST http://localhost:3000/api/llm/chat \
 - **200 OK** - Respuesta generada por el asistente:
 ```json
 {
-  "extracted_keyword": "camiseta",
   "response": "Encontré los siguientes productos relacionados con 'camiseta': Camiseta Oversize: $29.99 (Stock: 50), Camiseta Básica: $19.99 (Stock: 100)"
 }
 ```

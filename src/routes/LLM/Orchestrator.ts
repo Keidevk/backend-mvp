@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { prisma } from '../../pluggins/prisma.js';
+import { prisma } from '../../plugins/prisma.js';
 import { LLMController } from './LLMController.js';
 
 class ChatOrchestratorClass {

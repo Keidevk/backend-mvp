@@ -1,17 +1,17 @@
 import type { FastifyInstance } from "fastify";
-import { ProductoController } from "./ProductController.js";
+import { ProductController } from "./ProductController.js";
 import type { ProductData } from "../../types/Product.js";
 
 // Esquema de validación para el Body de creación
 const createProductSchema = {
     body: {
         type: 'object',
-        required: ['client_id', 'name', 'price', 'Stock'],
+        required: ['client_id', 'name', 'price', 'stock'],
         properties: {
             client_id: { type: 'string' },
             name: { type: 'string', minLength: 3 },
             price: { type: 'number', minimum: 0 },
-            Stock: { type: 'integer', minimum: 0 },
+            stock: { type: 'integer', minimum: 0 },
             description: { type: 'string' }
         }
     }
@@ -27,8 +27,8 @@ const productIdParamSchema = {
     }
 };
 
-export async function ProductoRouter(fastify: FastifyInstance) {
-    const controller = new ProductoController(fastify);
+export async function ProductRouter(fastify: FastifyInstance) {
+    const controller = new ProductController(fastify);
 
     // CREATE
     fastify.post('/create', { schema: createProductSchema }, async (request, reply) => {

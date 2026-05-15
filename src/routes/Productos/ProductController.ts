@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import type { ProductData } from "../../types/Product.js";
-import { prisma } from '../../pluggins/prisma.js'
+import { prisma } from '../../plugins/prisma.js'
 
-export class ProductoController {
+export class ProductController {
     constructor(private fastify: FastifyInstance) {}
 
     // CREATE
@@ -13,7 +13,7 @@ export class ProductoController {
                     client_id: data.client_id,
                     name: data.name,
                     price: data.price,
-                    stock: data.Stock,
+                    stock: data.stock,
                     description: data.description,
                 }
             });
@@ -41,16 +41,14 @@ export class ProductoController {
     // UPDATE
     async updateProduct(id: string, data: Partial<ProductData>) {
         try {
-            const updateData: any = {};
-
-            if (data.name !== undefined) updateData.name = data.name;
-            if (data.price !== undefined) updateData.price = data.price;
-            if (data.Stock !== undefined) updateData.stock = data.Stock;
-            if (data.description !== undefined) updateData.description = data.description;
-
             return await prisma.product.update({
                 where: { id },
-                data: updateData
+                data: {
+                    ...(data.name !== undefined && { name: data.name }),
+                    ...(data.price !== undefined && { price: data.price }),
+                    ...(data.stock !== undefined && { stock: data.stock }),
+                    ...(data.description !== undefined && { description: data.description }),
+                }
             });
         } catch (error) {
             this.fastify.log.error(error);

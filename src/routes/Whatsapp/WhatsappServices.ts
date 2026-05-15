@@ -7,7 +7,7 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import pino from 'pino';
-import { prisma } from '../../pluggins/prisma.js';
+import { prisma } from '../../plugins/prisma.js';
 import { ChatOrchestrator } from '../LLM/Orchestrator.js';
 
 interface SessionCallbacks {
@@ -41,7 +41,8 @@ export class WhatsappServices {
             }
 
             if (connection === 'close') {
-                const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
+                const error = lastDisconnect?.error;
+                const shouldReconnect = !(error instanceof Boom) || error.output.statusCode !== DisconnectReason.loggedOut;
                 if (shouldReconnect) {
                     console.log(`[${clientId}] Conexión cerrada, reintentando...`);
                     this.initSession(clientId, callbacks);
@@ -82,9 +83,11 @@ export class WhatsappServices {
                 
             } catch (error) {
                 console.error(`[Error WhatsApp] Fallo en ${clientId}:`, error);
-                await sock.sendMessage(jid, { 
-                    text: "Lo siento, tuve un inconveniente técnico. Por favor, intenta de nuevo." 
-                });
+                try {
+                    await sock.sendMessage(jid, {
+                        text: "Lo siento, tuve un inconveniente técnico. Por favor, intenta de nuevo."
+                    });
+                } catch { }
             }
         });
 

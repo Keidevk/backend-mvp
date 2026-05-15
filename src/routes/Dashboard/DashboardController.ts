@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { DashboardServices } from "./DashboardServices.js";
 import { sessionManager } from "../Whatsapp/SessionManager.js";
-import { prisma } from "../../pluggins/prisma.js";
+import { prisma } from "../../plugins/prisma.js";
 
 export class DashboardController {
   constructor(private fastify: FastifyInstance) {}

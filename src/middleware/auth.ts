@@ -33,7 +33,7 @@ export function authMiddleware(
 
     const decoded = jwt.verify(token, secret) as JwtPayload;
     request.user = decoded;
-  } catch (error) {
+  } catch {
     return reply.code(401).send({ error: "Token inválido" });
   }
 }

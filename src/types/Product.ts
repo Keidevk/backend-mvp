@@ -3,7 +3,7 @@ export interface ProductData {
     name:string
     description:string | null
     price:number
-    Stock:number
+    stock:number
     client_id:string
     createAt:Date
     updatedAt:Date

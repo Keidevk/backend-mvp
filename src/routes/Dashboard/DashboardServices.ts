@@ -1,4 +1,4 @@
-import { prisma } from "../../pluggins/prisma.js";
+import { prisma } from "../../plugins/prisma.js";
 
 export class DashboardServices {
   static async getBotByUserId(userId: string) {
@@ -40,27 +40,6 @@ export class DashboardServices {
     return prisma.user.findUnique({
       where: { id: userId },
       select: { clientId: true },
-    });
-  }
-
-  static async getMessagesByBotId(
-    botId: string,
-    from?: Date,
-    to?: Date
-  ) {
-    const where: { botId: string; sentAt?: { gte?: Date; lte?: Date } } = {
-      botId,
-    };
-
-    if (from || to) {
-      where.sentAt = {};
-      if (from) where.sentAt.gte = from;
-      if (to) where.sentAt.lte = to;
-    }
-
-    return prisma.message.findMany({
-      where,
-      orderBy: { sentAt: "asc" },
     });
   }
 

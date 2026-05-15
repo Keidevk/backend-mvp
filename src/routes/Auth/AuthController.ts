@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { prisma } from "../../pluggins/prisma.js";
+import { prisma } from "../../plugins/prisma.js";
 import { generateClientId, generateApiKey } from "./AuthServices.js";
 import { authMiddleware } from "../../middleware/index.js";
 

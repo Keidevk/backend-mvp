@@ -1,25 +1,34 @@
-import fastify, { type FastifyInstance } from "fastify";
+import { type FastifyInstance } from "fastify";
 export class LLMController {
     constructor(private fastify:FastifyInstance){}
 
-    /*async testConnection(){
-       try {
-        const response = await fetch('http://localhost:11434/api/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'qwen2.5:1.5b',
-            prompt: 'Responde solo con la palabra: ONLINE',
-            stream: false
-          })
-        });
+    async testConnection(): Promise<string> {
+        try {
+            const response = await fetch(`${process.env.TEST_ENDPOINT}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${process.env.TEST_KEY_GITHUB}`,
+                },
+                body: JSON.stringify({
+                    model: `${process.env.TINY_MODEL_NAME_TEST}`,
+                    messages: [
+                        { role: 'user', content: 'Responde solo con la palabra: ONLINE' }
+                    ],
+                    temperature: 0,
+                    max_tokens: 10
+                })
+            });
 
-        const data = await response.json() as { response: string };
-        return data.response.trim();
-        } catch (error) {
-          return 'OFFLINE';
+            if (!response.ok) return 'OFFLINE';
+
+            const data = await response.json();
+            const content = data.choices?.[0]?.message?.content;
+            return content?.trim().includes('ONLINE') ? 'ONLINE' : 'OFFLINE';
+        } catch {
+            return 'OFFLINE';
         }
-    }*/
+    }
 
     async identifyProduct(userMessage: string): Promise<string> {
         const response = await fetch(`${process.env.TEST_ENDPOINT}`, {
