@@ -171,4 +171,50 @@ export class DashboardController {
       },
     });
   }
+
+  async getLogs(request: FastifyRequest, reply: FastifyReply) {
+    const userId = request.user?.id;
+    if (!userId) {
+      return reply.code(401).send({ error: "Usuario no autenticado" });
+    }
+
+    const user = await DashboardServices.getUserById(userId);
+    if (!user) {
+      return reply.code(404).send({ error: "Usuario no encontrado" });
+    }
+
+    const logs = await prisma.chatLog.findMany({
+      where: { clientId: user.clientId },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+
+    return reply.send({ success: true, data: logs });
+  }
+
+  async updateLogAlert(request: FastifyRequest, reply: FastifyReply) {
+    const userId = request.user?.id;
+    if (!userId) {
+      return reply.code(401).send({ error: "Usuario no autenticado" });
+    }
+
+    const { logId } = request.params as { logId: string };
+
+    const log = await prisma.chatLog.findUnique({ where: { id: logId } });
+    if (!log) {
+      return reply.code(404).send({ error: "Log no encontrado" });
+    }
+
+    const user = await DashboardServices.getUserById(userId);
+    if (!user || log.clientId !== user.clientId) {
+      return reply.code(403).send({ error: "No tienes permiso para modificar este log" });
+    }
+
+    await prisma.chatLog.update({
+      where: { id: logId },
+      data: { attended: true },
+    });
+
+    return reply.send({ success: true, message: "Alerta marcada como atendida" });
+  }
 }

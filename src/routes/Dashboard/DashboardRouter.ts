@@ -30,4 +30,12 @@ export async function DashboardRouter(fastify: FastifyInstance) {
   fastify.get("/metrics/summary", async (request, reply) => {
     return controller.getMetricsSummary(request, reply);
   });
+
+  fastify.get("/logs/:clientId", async (request, reply) => {
+    return controller.getLogs(request, reply);
+  });
+
+  fastify.patch("/logs/:logId", async (request, reply) => {
+    return controller.updateLogAlert(request, reply);
+  });
 }

@@ -76,7 +76,7 @@ export class WhatsappServices {
             try {
                 await prisma.user.update({ where: { clientId }, data: { messageCredits: { increment: 1 } } });
 
-                const response = await ChatOrchestrator.processMessage(text, clientId);
+                const { response } = await ChatOrchestrator.processMessage(text, clientId, jid);
 
                 await sock.sendMessage(jid, { text: response });
                 await prisma.user.update({ where: { clientId }, data: { messageCredits: { increment: 1 } } });

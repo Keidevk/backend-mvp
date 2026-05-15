@@ -16,9 +16,9 @@ export async function LLMRouter(fastify: FastifyInstance) {
   });
 
   fastify.post('/chat', async (request, reply) => {
-    const { message, clientId } = request.body as { message: string, clientId: string };
+    const { message, clientId, customerPhone } = request.body as { message: string; clientId: string; customerPhone?: string };
 
-    const response = await ChatOrchestrator.processMessage(message, clientId);
+    const { response } = await ChatOrchestrator.processMessage(message, clientId, customerPhone);
 
     return { response };
   });

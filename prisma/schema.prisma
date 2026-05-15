@@ -78,3 +78,18 @@ model Message {
   @@index([botId, sentAt])
   @@map("messages")
 }
+
+model ChatLog {
+  id                String   @id @default(uuid())
+  clientId          String   @map("client_id")
+  customerPhone     String?  @map("customer_phone")
+  userMessage       String   @map("user_message")
+  botResponse       String   @map("bot_response")
+  extractedKeyword  String?  @map("extracted_keyword")
+  requiresAttention Boolean  @default(false) @map("requires_attention")
+  attended          Boolean  @default(false)
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@index([clientId, createdAt])
+  @@map("chat_logs")
+}
