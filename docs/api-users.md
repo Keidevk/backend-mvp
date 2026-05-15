@@ -18,6 +18,10 @@ Documentación técnica de los endpoints disponibles en el backend MVP.
 - [LLM API](#llm-api)
   - [Verificar Estado del LLM](#verificar-estado-del-llm)
   - [Chat con IA](#chat-con-ia)
+- [Dashboard API](#dashboard-api)
+  - [Activar Bot](#activar-bot)
+  - [Desactivar Bot](#desactivar-bot)
+  - [Obtener Estado del Bot](#obtener-estado-del-bot)
 
 ---
 
@@ -395,3 +399,107 @@ curl -X POST http://localhost:3000/api/llm/chat \
   "response": "Lo siento, ¿podrías decirme qué producto buscas?"
 }
 ```
+
+---
+
+## Dashboard API
+
+### Activar Bot
+
+**Método HTTP y Ruta:** `POST /api/dashboard/bot/activate`
+
+**Descripción:** Activa el bot de WhatsApp para el usuario autenticado. Inicia la sesión de WhatsApp y registra la hora de conexión.
+
+**Autenticación:** Requiere JWT token en el header `Authorization: Bearer <token>`
+
+**Parámetros de la Solicitud:** Sin cuerpo (el userId se obtiene del token)
+
+**Ejemplos de Uso:**
+
+```bash
+curl -X POST http://localhost:3000/api/dashboard/bot/activate \
+  -H "Authorization: Bearer <tu_token_jwt>"
+```
+
+**Respuestas:**
+
+- **200 OK** - Bot activado exitosamente:
+```json
+{
+  "success": true,
+  "message": "Bot activado correctamente"
+}
+```
+
+- **401 Unauthorized** - Token no proporcionado o inválido
+- **404 Not Found** - Usuario no encontrado
+- **500 Internal Server Error** - Error al iniciar la sesión de WhatsApp
+
+---
+
+### Desactivar Bot
+
+**Método HTTP y Ruta:** `POST /api/dashboard/bot/deactivate`
+
+**Descripción:** Desactiva el bot de WhatsApp para el usuario autenticado. Registra la hora de desconexión.
+
+**Autenticación:** Requiere JWT token en el header `Authorization: Bearer <token>`
+
+**Parámetros de la Solicitud:** Sin cuerpo
+
+**Ejemplos de Uso:**
+
+```bash
+curl -X POST http://localhost:3000/api/dashboard/bot/deactivate \
+  -H "Authorization: Bearer <tu_token_jwt>"
+```
+
+**Respuestas:**
+
+- **200 OK** - Bot desactivado exitosamente:
+```json
+{
+  "success": true,
+  "message": "Bot desactivado correctamente"
+}
+```
+
+- **401 Unauthorized** - Token no proporcionado o inválido
+- **404 Not Found** - Bot no encontrado
+
+---
+
+### Obtener Estado del Bot
+
+**Método HTTP y Ruta:** `GET /api/dashboard/bot/status`
+
+**Descripción:** Obtiene el estado actual del bot de WhatsApp del usuario autenticado.
+
+**Autenticación:** Requiere JWT token en el header `Authorization: Bearer <token>`
+
+**Parámetros de la Solicitud:** Sin cuerpo
+
+**Ejemplos de Uso:**
+
+```bash
+curl -X GET http://localhost:3000/api/dashboard/bot/status \
+  -H "Authorization: Bearer <tu_token_jwt>"
+```
+
+**Respuestas:**
+
+- **200 OK** - Estado del bot:
+```json
+{
+  "success": true,
+  "data": {
+    "isActive": true,
+    "whatsappSessionId": "client-empresa-abc123",
+    "connectedAt": "2026-05-15T10:00:00.000Z",
+    "disconnectedAt": null
+  }
+}
+```
+
+- **401 Unauthorized** - Token no proporcionado o inválido
+- **404 Not Found** - Bot no encontrado
