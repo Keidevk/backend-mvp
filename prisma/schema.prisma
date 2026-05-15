@@ -14,8 +14,6 @@ model Client {
   botActive       Boolean   @default(false)
   promptConfig    String?   // "Personalidad" del bot
   createdAt       DateTime  @default(now())
-   
-   products        Product[]
 }
 
 model Product {
@@ -25,7 +23,6 @@ model Product {
   price       Float    // Guardado en USD
   stock       Int
   client_id   String
-  client      Client   @relation(fields: [client_id], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
    

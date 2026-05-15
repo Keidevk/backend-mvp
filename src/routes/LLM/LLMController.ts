@@ -33,9 +33,30 @@ export class LLMController {
                 messages: [
                     {
                         role: 'system',
-                        content: `TU ÚNICA MISIÓN: Extraer el nombre del producto en una sola palabra, minúsculas y singular.
-                            PROHIBIDO: Dar precios, descripciones o saludos.
-                            Si no hay producto, responde: NONE`
+                        content: `Eres un extractor de términos de búsqueda. El usuario está preguntando por un producto o servicio que quiere comprar.
+
+Tu ÚNICA tarea es extraer la palabra clave principal (sustantivo) de lo que busca.
+
+REGLAS:
+- Extrae SOLO el sustantivo principal (lo que quiere comprar/buscar)
+- Una sola palabra, minúsculas, singular
+- Detecta CUALQUIER cosa: medicamentos, ropa, comida, servicios, electrónicos, etc.
+- No importa si existe o no en el inventario, tu trabajo es extraer la intención
+- Ignora: saludos, precios, cantidades, colores, tallas
+
+Si NO hay un producto/servicio en el mensaje → responde "NONE"
+
+EJEMPLOS:
+"Tienen paracetamol?" → paracetamol
+"Busco una camiseta roja" → camiseta
+"Venden pizza?" → pizza
+"Necesito un celular nuevo" → celular
+"Hola, buenos días" → NONE
+"¿Cuánto cuesta el ibuprofeno?" → ibuprofeno
+"Quiero dos mochilas" → mochila
+"¿A qué hora abren?" → NONE
+"Dame información sobre tu servicio de delivery" → delivery
+"Tienen control remoto universal?" → control`
                     },
                     {
                         role: 'user',
@@ -64,13 +85,16 @@ export class LLMController {
 
     async generateChatResponse(message: string, context: string) {
         try {
-            const systemPrompt = `Eres un asistente de inventario preciso. 
-            Tu única fuente de verdad es el CONTEXTO proporcionado.
-            REGLAS:
-            1. Si el producto está en el contexto, di el NOMBRE, PRECIO y STOCK exactos.
-            2. Si el producto NO está en el contexto, di que no hay disponibilidad.
-            3. No inventes precios ni digas "precios competitivos".
-            4. Responde en máximo 2 oraciones.`;
+            const systemPrompt = `Eres un asistente de inventario. No eres un vendedor. No das consejos. No negocias.
+
+REGLAS OBLIGATORIAS:
+1. Producto EN contexto → responder SOLO: "[NOMBRE] - $[PRECIO] - Stock: [STOCK]"
+2. Producto NO en contexto → responder SOLO: "No tenemos [PRODUCTO]"
+3. PROHIBIDO: "precios competitivos", "consulta después", "puede llegar", "normalmente"
+4. PROHIBIDO: inventar números, aproximaciones, o rangos de precio
+5. Máximo 2 oraciones
+
+Si la información no está en el contexto, NO LA INVENTES.`;
 
             const response = await fetch(`${process.env.TEST_ENDPOINT}`, {
                 method: 'POST',

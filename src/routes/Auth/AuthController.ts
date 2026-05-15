@@ -36,16 +36,24 @@ export class AuthController {
     const clientId = generateClientId(companyName);
     const apiKey = generateApiKey();
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        companyName,
-        phoneNumber,
-        clientId,
-        apiKey,
-      },
-    });
+    const [user] = await prisma.$transaction([
+      prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          companyName,
+          phoneNumber,
+          clientId,
+          apiKey,
+        },
+      }),
+      prisma.client.create({
+        data: {
+          id: clientId,
+          name: companyName,
+        },
+      }),
+    ]);
 
     const token = this.generateToken(user);
 
