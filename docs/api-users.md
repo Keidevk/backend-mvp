@@ -154,7 +154,7 @@ curl -X POST http://localhost:3000/api/auth/login \
 | client_id | string | Sí | Identificador único del cliente al que pertenece el producto |
 | name | string | Sí | Nombre del producto (mínimo 3 caracteres) |
 | price | number | Sí | Precio del producto (valor no negativo) |
-| Stock | integer | Sí | Cantidad disponible en inventario (valor no negativo) |
+| stock | integer | Sí | Cantidad disponible en inventario (valor no negativo) |
 | description | string | No | Descripción detallada del producto |
 
 **Ejemplos de Uso:**
@@ -166,7 +166,7 @@ curl -X POST http://localhost:3000/api/productos/create \
     "client_id": "client-123",
     "name": "Camiseta Oversize",
     "price": 29.99,
-    "Stock": 50,
+    "stock": 50,
     "description": "Camiseta de algodón disponible en varios colores"
   }'
 ```
@@ -176,7 +176,7 @@ curl -X POST http://localhost:3000/api/productos/create \
   "client_id": "client-123",
   "name": "Camiseta Oversize",
   "price": 29.99,
-  "Stock": 50,
+  "stock": 50,
   "description": "Camiseta de algodón disponible en varios colores"
 }
 ```
@@ -259,7 +259,7 @@ curl -X GET http://localhost:3000/api/productos/client/client-123
 | id | string (UUID) | Sí | Identificador único del producto (path parameter) |
 | name | string | No | Nuevo nombre del producto |
 | price | number | No | Nuevo precio del producto |
-| Stock | integer | No | Nueva cantidad en inventario |
+| stock | integer | No | Nueva cantidad en inventario |
 | description | string | No | Nueva descripción del producto |
 
 **Ejemplos de Uso:**
@@ -269,14 +269,14 @@ curl -X PUT http://localhost:3000/api/productos/550e8400-e29b-41d4-a716-44665544
   -H "Content-Type: application/json" \
   -d '{
     "price": 34.99,
-    "Stock": 45
+    "stock": 45
   }'
 ```
 
 ```json
 {
   "price": 34.99,
-  "Stock": 45
+  "stock": 45
 }
 ```
 
